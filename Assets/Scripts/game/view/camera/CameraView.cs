@@ -10,7 +10,7 @@ namespace tikal.game {
 		
 		private const float DISTANCE = 15f;
 		private const float HEIGHT = 8f;
-		private const float SPEED = 2.5f;
+		private const float SPEED = 10.0f;
 		
 		public GameObject target;
 		
@@ -21,6 +21,7 @@ namespace tikal.game {
 		private bool cameraLookAt = false;
 
 		private Vector3 xStep = new Vector3(1.0f, 0.0f, 0.0f);
+		private Vector3 zStep = new Vector3(0.0f, 0.0f, 1.0f);
 		private Vector3 nextPosition;
 		private Transform _transform;
 		private CameraState _state;
@@ -33,17 +34,21 @@ namespace tikal.game {
 		}
 
 
-		void FixedUpdate (){
+		void Update (){
 			if (_state == CameraState.KEYBOARD) {
+				nextPosition = _transform.position;
 				// receive keyboard events
-				float t = cameraSpeed / 10f * Time.deltaTime;
-				if (Input.GetKeyDown (KeyCode.Q) || Input.GetKeyDown (KeyCode.LeftArrow)) {
-					Debug.Log ("left");
-					nextPosition = _transform.position - xStep;
+				if (Input.GetKey (KeyCode.Q) || Input.GetKey (KeyCode.LeftArrow)) {
+					nextPosition -= xStep*cameraSpeed;
 				}
-				if (Input.GetKeyDown (KeyCode.D) || Input.GetKeyDown (KeyCode.RightArrow)) {
-					Debug.Log ("Right");
-					nextPosition =  _transform.position + xStep;
+				if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.RightArrow)) {
+					nextPosition += xStep*cameraSpeed;
+				}
+				if (Input.GetKey (KeyCode.Z) || Input.GetKey (KeyCode.UpArrow)) {
+					nextPosition += zStep*cameraSpeed;
+				}
+				if (Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.DownArrow)) {
+					nextPosition -= zStep*cameraSpeed;
 				}
 			}
 		}

@@ -54,10 +54,15 @@
      <Compile Include="Assets\Scripts\game\controller\ReplayGameCommand.cs" />
      <Compile Include="Assets\Scripts\game\controller\ShipDestroyedCommand.cs" />
      <Compile Include="Assets\Scripts\game\controller\UpdateScoreCommand.cs" />
+     <Compile Include="Assets\Scripts\game\controller\camera\CameraAttachCommand.cs" />
+     <Compile Include="Assets\Scripts\game\controller\camera\CameraFlythroughCommand.cs" />
      <Compile Include="Assets\Scripts\game\controller\startupSequence\StartAppCommand.cs" />
      <Compile Include="Assets\Scripts\game\controller\startupSequence\StartGameCommand.cs" />
      <Compile Include="Assets\Scripts\game\model\IScore.cs" />
      <Compile Include="Assets\Scripts\game\model\ScoreModel.cs" />
+     <Compile Include="Assets\Scripts\game\model\camera\CameraModel.cs" />
+     <Compile Include="Assets\Scripts\game\model\camera\ICamera.cs" />
+     <Compile Include="Assets\Scripts\game\signal\CameraSignal.cs" />
      <Compile Include="Assets\Scripts\game\util\GameLoop.cs" />
      <Compile Include="Assets\Scripts\game\util\IGameTimer.cs" />
      <Compile Include="Assets\Scripts\game\view\ClickDetector.cs" />
@@ -67,6 +72,10 @@
      <Compile Include="Assets\Scripts\game\view\ScoreboardView.cs" />
      <Compile Include="Assets\Scripts\game\view\ShipMediator.cs" />
      <Compile Include="Assets\Scripts\game\view\ShipView.cs" />
+     <Compile Include="Assets\Scripts\game\view\camera\CameraMediator.cs" />
+     <Compile Include="Assets\Scripts\game\view\camera\CameraState.cs" />
+     <Compile Include="Assets\Scripts\game\view\camera\CameraView.cs" />
+     <Compile Include="Assets\Scripts\game\view\camera\CameraWaypoint.cs" />
      <Compile Include="Assets\Scripts\main\MainContext.cs" />
      <Compile Include="Assets\Scripts\main\MainRoot.cs" />
      <Compile Include="Assets\Scripts\main\controller\GameCompleteCommand.cs" />

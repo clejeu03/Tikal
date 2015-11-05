@@ -7,11 +7,12 @@ namespace tikal.game
 {
 	public class GameLoop : MonoBehaviour, IGameTimer
 	{
+
 		private bool sendUpdates = false;
-		
+
 		[Inject(ContextKeys.CONTEXT_DISPATCHER)]
 		public IEventDispatcher dispatcher{get;set;}
-		
+
 		public GameLoop ()
 		{
 		}

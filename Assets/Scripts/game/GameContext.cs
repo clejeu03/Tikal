@@ -26,6 +26,22 @@ namespace tikal.game
 		
 		protected override void mapBindings()
 		{
+			//------------------------------------------//
+			// 				Camera Bindings				//
+			//------------------------------------------//
+			injectionBinder.Bind<ICamera>().To<CameraModel>().ToSingleton();
+			
+			injectionBinder.Bind<CameraStateSignal>().ToSingleton();
+			injectionBinder.Bind<FlythroughCompleteSignal>().ToSingleton();
+			
+			mediationBinder.Bind<CameraView>().To<CameraMediator>();
+			
+			commandBinder.Bind<CameraSequenceSignal>().To<CameraFlythroughCommand>()
+				.To<CameraAttachCommand>().InSequence();
+
+			//------------------------------------------//
+			// 				Game Bindings				//
+			//------------------------------------------//
 			injectionBinder.Bind<IScore>().To<ScoreModel>().ToSingleton();
 			
 			mediationBinder.Bind<ShipView>().To<ShipMediator>();
@@ -50,7 +66,7 @@ namespace tikal.game
 					.Once ().InSequence ();
 			}
 
-			
+
 			commandBinder.Bind(GameEvent.ADD_TO_SCORE).To<UpdateScoreCommand>();
 			commandBinder.Bind(GameEvent.SHIP_DESTROYED).To<ShipDestroyedCommand>();
 			commandBinder.Bind(GameEvent.GAME_OVER).To<GameOverCommand>();

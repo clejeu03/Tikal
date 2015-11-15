@@ -21,23 +21,28 @@ namespace tikal.game {
 		private bool cameraLookAt = false;
 
 		private Vector3 nextPosition;
+		private Vector3 nextEulerAngles;
 		private Transform _transform;
 		private CameraState _state;
 		private CameraWaypoint _waypoint;
-		
+		private float _xAngle;
+		private float _yAngle;
+
 		internal void init() {
 			_transform = transform;
 			nextPosition = new Vector3(cameraDistance, cameraHeight, -cameraDistance);
 			_state = CameraState.KEYBOARD;
+
 		}
 
 
 		void Update (){
 			if (_state == CameraState.KEYBOARD) {
 				nextPosition = _transform.position;
+				nextEulerAngles = _transform.eulerAngles;
 				Vector3 camForward = Vector3.Scale (_transform.forward, new Vector3(1,0,1)).normalized;
 				Vector3 camRight = Vector3.Scale (_transform.right, new Vector3(1,0,1)).normalized;
-				// receive keyboard events
+				// -------------  Receive keyboard events ------------- //
 				if (Input.GetKey (KeyCode.Q) || Input.GetKey (KeyCode.LeftArrow)) {
 					nextPosition -= camRight*cameraSpeed;
 				}
@@ -50,6 +55,30 @@ namespace tikal.game {
 				if (Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.DownArrow)) {
 					nextPosition -= camForward*cameraSpeed;
 				}
+				// -------------  Receive mouse events ------------- //
+				// UNITY Conventions :
+				// Mouse Button 0 = left click
+				// Mouse button 1 = right click
+				// Mouse button 2 = middle click
+
+				Vector3 camUp = Vector3.Scale (_transform.up, new Vector3(1,0,1)).normalized;
+				if(Input.GetMouseButton(1)){
+					_xAngle = _transform.eulerAngles.y;
+					_yAngle = _transform.eulerAngles.x;
+					_xAngle += Input.GetAxis("Mouse X") * cameraSpeed;
+					_yAngle -= Input.GetAxis("Mouse Y") * cameraSpeed;
+					
+					_yAngle = Mathf.Clamp(_yAngle, -360, 360);
+					
+					Quaternion rotation = Quaternion.Euler(_yAngle, _xAngle, 0);
+					nextPosition += rotation * Vector3.zero;
+					
+					_transform.rotation = rotation;
+				}if(Input.GetKey(KeyCode.A)){ 
+					_transform.RotateAround( Input.mousePosition, camUp, 20 * Time.deltaTime);
+				}else if (Input.GetKey(KeyCode.E)){
+					_transform.RotateAround(Input.mousePosition, camUp, -20 * Time.deltaTime);
+				}
 			}
 		}
 		
@@ -57,6 +86,9 @@ namespace tikal.game {
 			if (_state == CameraState.KEYBOARD) {
 				// apply keyboard events
 				updateKeyboardCamera(nextPosition);
+
+
+				
 			} else if (_state == CameraState.CINEMATIC) {
 				updateCinematicCamera();
 			}

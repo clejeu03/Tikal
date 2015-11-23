@@ -35,18 +35,18 @@ private var lastMousePos : Vector3;
 private var lastPanSpeed : Vector3 = Vector3.zero;
 private var goingToCameraTarget : Vector3 = Vector3.zero;
 private var doingAutoMovement : boolean = false;
-//private var doubleClickDetector : DoubleClickDetector;
+private var doubleClickDetector : DoubleClickDetector;
 
 // -------------------------- Public Methods --------------------------
 function Start () {
 	currentCameraDistance = minZoomDistance + ((maxZoomDistance - minZoomDistance) / 2.0f);
 	lastMousePos = Vector3.zero;
-	//doubleClickDetector = new DoubleClickDetector();
+	doubleClickDetector = new DoubleClickDetector();
 }
 
 function Update () {
 	if (allowDoubleClickMovement) {
-		//doubleClickDetector.Update();
+		doubleClickDetector.Update();
 		UpdateDoubleClick();
 	}
 	UpdatePanning();
@@ -69,7 +69,7 @@ function Follow(gameObjectToFollow : GameObject) {
 
 // -------------------------- Private Methods --------------------------
 private function UpdateDoubleClick() {
-	if (/*doubleClickDetector.IsDoubleClick() &&*/ terrain && terrain.GetComponent(Collider)) {
+	if (doubleClickDetector.IsDoubleClick() && terrain && terrain.GetComponent(Collider)) {
 		var cameraTargetY = cameraTarget.y;
 		
 		var collider : Collider = terrain.GetComponent(Collider);

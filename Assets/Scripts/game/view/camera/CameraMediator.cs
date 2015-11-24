@@ -21,7 +21,6 @@ namespace tikal.game {
 		public override void OnRegister() {
 			AddListeners();
 			view.init();
-
 		}
 		
 		public override void OnRemove() {

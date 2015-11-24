@@ -28,6 +28,13 @@ namespace tikal.game
 			if(timer > 0.3f){
 				numberOfClicks = 0;
 			}
+
+			if (Input.GetMouseButtonDown(0)) {
+				numberOfClicks++;
+				timer = 0.0f;
+			}
+
+			IsDoubleClick();
 		}
 	}
 }

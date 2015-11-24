@@ -31,7 +31,7 @@ namespace tikal.game {
 		public bool increaseSpeedWhenZoomedOut = true;
 		public bool correctZoomingOutRatio = true;
 		public bool smoothing = true;
-		public bool allowDoubleClickMovement = true;
+		public bool allowDoubleClickMovement = false;
 
 		public GameObject objectToFollow;
 		public GameObject objectToGoTo;
@@ -84,6 +84,7 @@ namespace tikal.game {
 		}
 
 		public void setSmoothingFactor(float x) {
+			Debug.Log("plop" + x );
 			smoothingFactor = x;
 		}
 		
@@ -107,6 +108,7 @@ namespace tikal.game {
 			allowDoubleClickMovement = x;
 		}
 
+		
 		// -------------------------- Private Methods --------------------------
 		private void updateDoubleClick(){
 			if( (allowDoubleClickMovement == true) && (terrain != null) && (terrain.GetComponent<Collider>() != null)){

@@ -13,8 +13,8 @@ namespace tikal.game
 		private int numberOfClicks = 0;
 		private float timer = 0.0f;
 
-		void IsDoubleClick(){
-			bool isDoubleClick = numberOfClicks == 2;
+		public bool IsDoubleClick(){
+			bool isDoubleClick = (numberOfClicks == 2)?true : false;
 			if(isDoubleClick){
 				numberOfClicks = 0;
 				dispatcher.Dispatch(DOUBLE_CLICK);
@@ -22,7 +22,7 @@ namespace tikal.game
 			return isDoubleClick;
 		}
 
-		void Update(){
+		public void Update(){
 			timer += Time.deltaTime;
 
 			if(timer > 0.3f){

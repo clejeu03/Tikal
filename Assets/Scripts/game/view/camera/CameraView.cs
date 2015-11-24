@@ -7,153 +7,240 @@ using strange.extensions.mediation.impl;
 namespace tikal.game {
 	
 	public class CameraView : View {
-		
-		private const float DISTANCE = 15f;
-		private const float HEIGHT = 8f;
-		private const float SPEED = 10.0f;
-		
-		public GameObject target;
-		
-		// demo controls
-		private float cameraDistance = DISTANCE;
-		private float cameraHeight = HEIGHT;
-		private float cameraSpeed = SPEED;
-		private bool cameraLookAt = false;
 
-		private Vector3 nextPosition;
-		private Vector3 nextEulerAngles;
-		private Transform _transform;
-		private CameraState _state;
-		private CameraWaypoint _waypoint;
-		private float _xAngle;
-		private float _yAngle;
+		internal const string DOUBLE_CLICK_EVENT = "DOUBLE_CLICK_EVENT";
 
-		internal void init() {
-			_transform = transform;
-			nextPosition = new Vector3(cameraDistance, cameraHeight, -cameraDistance);
-			_state = CameraState.KEYBOARD;
+		// -------------------------- Configuration --------------------------
+		public Terrain terrain;
+		public float panSpeed = 15.0f;
+		public float zoomSpeed = 100.0f;
+		public float rotationSpeed = 50.0f;
+
+		public float mousePanMultiplier = 0.1f;
+		public float mouseRotationMultiplier = 0.2f;
+		public float mouseZoomMultiplier = 5.0f;
+
+		public float minZoomDistance = 20.0f;
+		public float maxZoomDistance = 200.0f;
+		public float smoothingFactor = 0.1f;
+		public float goToSpeed = 0.1f;
+
+		public bool useKeyboardInput = true;
+		public bool useMouseInput = true;
+		public bool adaptToTerrainHeight = true;
+		public bool increaseSpeedWhenZoomedOut = true;
+		public bool correctZoomingOutRatio = true;
+		public bool smoothing = true;
+		public bool allowDoubleClickMovement = true;
+
+		public GameObject objectToFollow;
+		public GameObject objectToGoTo;
+		public Vector3 cameraTarget;
+
+		// -------------------------- Private Attributes --------------------------
+		private float currentCameraDistance;
+		private Vector3 lastMousePos;
+		private Vector3 lastPanSpeed = Vector3.zero;
+		private Vector3 goingToCameraTarget = Vector3.zero;
+		private bool doingAutoMovement = false;
+		private DoubleClickDetector doubleClicker;
+
+		// -------------------------- Public Methods --------------------------
+		void Start(){
+			currentCameraDistance = minZoomDistance + ((maxZoomDistance - minZoomDistance) / 2.0f);
+			lastMousePos = Vector3.zero;
+		}
+
+		internal void init(){
+			gameObject.AddComponent<DoubleClickDetector>();
+			doubleClicker = gameObject.GetComponent<DoubleClickDetector>();
+			StartCoroutine (addDoubleClicker ());
+		}
+
+		private IEnumerator addDoubleClicker()
+		{
+			yield return null;
+			doubleClicker.dispatcher.AddListener(DoubleClickDetector.DOUBLE_CLICK, updateDoubleClick);
+		}
+
+		void Update(){
+			updatePanning();
+			updateRotation();
+			updateZooming();
+			updatePosition();
+			updateAutoMovement();
+			lastMousePos = Input.mousePosition;
 
 		}
 
+		public void goTo(Vector3 position){
+			doingAutoMovement = true;
+			goingToCameraTarget = position;
+			objectToFollow = null;
+		}
 
-		void Update (){
-			if (_state == CameraState.KEYBOARD) {
-				nextPosition = _transform.position;
-				nextEulerAngles = _transform.eulerAngles;
-				Vector3 camForward = Vector3.Scale (_transform.forward, new Vector3(1,0,1)).normalized;
-				Vector3 camRight = Vector3.Scale (_transform.right, new Vector3(1,0,1)).normalized;
-				// -------------  Receive keyboard events ------------- //
-				if (Input.GetKey (KeyCode.Q) || Input.GetKey (KeyCode.LeftArrow)) {
-					nextPosition -= camRight*cameraSpeed;
-				}
-				if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.RightArrow)) {
-					nextPosition += camRight*cameraSpeed;
-				}
-				if (Input.GetKey (KeyCode.Z) || Input.GetKey (KeyCode.UpArrow)) {
-					nextPosition += camForward*cameraSpeed;
-				}
-				if (Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.DownArrow)) {
-					nextPosition -= camForward*cameraSpeed;
-				}
-				// -------------  Receive mouse events ------------- //
-				// UNITY Conventions :
-				// Mouse Button 0 = left click
-				// Mouse button 1 = right click
-				// Mouse button 2 = middle click
+		public void follow(GameObject gameObjectToFollow){
+			objectToFollow = gameObjectToFollow;
+		}
 
-				Vector3 camUp = Vector3.Scale (_transform.up, new Vector3(1,0,1)).normalized;
-				if(Input.GetMouseButton(1)){
-					_xAngle = _transform.eulerAngles.y;
-					_yAngle = _transform.eulerAngles.x;
-					_xAngle += Input.GetAxis("Mouse X") * cameraSpeed;
-					_yAngle -= Input.GetAxis("Mouse Y") * cameraSpeed;
-					
-					_yAngle = Mathf.Clamp(_yAngle, -360, 360);
-					
-					Quaternion rotation = Quaternion.Euler(_yAngle, _xAngle, 0);
-					nextPosition += rotation * Vector3.zero;
-					
-					_transform.rotation = rotation;
-				}if(Input.GetKey(KeyCode.A)){ 
-					_transform.RotateAround( Input.mousePosition, camUp, 20 * Time.deltaTime);
-				}else if (Input.GetKey(KeyCode.E)){
-					_transform.RotateAround(Input.mousePosition, camUp, -20 * Time.deltaTime);
-				}
-			}
+		public void setSmoothingFactor(float x) {
+			smoothingFactor = x;
 		}
 		
-		void LateUpdate() {
-			if (_state == CameraState.KEYBOARD) {
-				// apply keyboard events
-				updateKeyboardCamera(nextPosition);
+		public void setPanSpeed(float x) {
+			panSpeed = x;
+		}
+		
+		public void setRotationSpeed(float x) {
+			rotationSpeed = x;
+		}
+		
+		public void setZoomSpeed(float x) {
+			zoomSpeed = x;
+		}
+		
+		public void setGoToSpeed(float x) {
+			goToSpeed = x;
+		}
+		
+		public void setDoubleClickMovement(bool x) {
+			allowDoubleClickMovement = x;
+		}
 
-
+		// -------------------------- Private Methods --------------------------
+		private void updateDoubleClick(){
+			if( (allowDoubleClickMovement == true) && (terrain != null) && (terrain.GetComponent<Collider>() != null)){
+				float cameraTargetY = cameraTarget.y;
+				Collider collider = terrain.GetComponent<Collider>();
+				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+				RaycastHit hit;
+				Vector3 pos;
 				
-			} else if (_state == CameraState.CINEMATIC) {
-				updateCinematicCamera();
+				if(collider.Raycast(ray, out hit, Mathf.Infinity)){
+					pos = hit.point;
+					pos.y = cameraTargetY;
+					goTo(pos);
+				}
 			}
-		}
-		
-		internal void stateChange(CameraState state) {
-			_state = state;
-		}
-		
-		internal void flyToWaypoint(CameraWaypoint waypoint) {
-			_transform.position = waypoint.from.position;
-			_transform.localRotation = waypoint.from.rotation;
-			
-			_waypoint = waypoint;
-		}
-		
-		internal void beginFlythrough() {
-			// demo - disable controls
-			//target.GetComponent<ThirdPersonController>().isControllable = false;
-		}
-		
-		internal void attachToTarget() {
-			// demo - enable controls
-			//target.GetComponent<ThirdPersonController>().isControllable = true;
-		}
-		
-		private void updateCinematicCamera() {
-			float t = _waypoint.duration / 10f * Time.deltaTime;
-			
-			_transform.position = Vector3.Lerp(_transform.position, _waypoint.to.position, t);
-			_transform.localRotation = Quaternion.Slerp(_transform.localRotation, _waypoint.to.rotation, t);
-		}
-		
-		private void updateKeyboardCamera(Vector3 target) {
-			float t = cameraSpeed * Time.deltaTime;
-			
-			_transform.position = Vector3.Lerp(_transform.position, target, t);
-			
-			if (cameraLookAt) {
-				_transform.rotation = Quaternion.Slerp (_transform.rotation, Quaternion.LookRotation(target - _transform.position), t);
-			} else {
-				//_transform.rotation = Quaternion.Slerp(_transform.rotation, Quaternion.Euler(new Vector3(30f, -45f, 0)), t);
-			}
-		}
-		
-		//-----------------------------------
-		//- DEMO CONTROLS                   -
-		//-----------------------------------
-		
-		internal void setCameraDistance(float distance) {
-			cameraDistance = distance;
 		}
 
-		internal void setCameraHeight(float height) {
-			cameraHeight = height;
+		private void updatePanning(){
+			Vector3 moveVector = Vector3.zero;
+			if(useKeyboardInput){
+				if(Input.GetKey(KeyCode.A)){
+					moveVector += new Vector3(-1,0,0);
+				}
+				if(Input.GetKey(KeyCode.S)){
+					moveVector += new Vector3(0, 0, -1);
+				}
+				if(Input.GetKey(KeyCode.D)){
+					moveVector += new Vector3(1, 0, 0);
+				}
+				if(Input.GetKey(KeyCode.W)){
+					moveVector += new Vector3(0, 0, 1);
+				}
+				if (Input.GetKey(KeyCode.T)) {
+					follow(objectToFollow);
+				}
+				if (Input.GetKey(KeyCode.G)) {
+					goTo(objectToGoTo.transform.position);
+				}
+			}
+
+			if(useMouseInput){
+				if(Input.GetMouseButton(2) && Input.GetKey (KeyCode.LeftShift)){
+					Vector3 deltaMousePos = (Input.mousePosition - lastMousePos);
+					moveVector += new Vector3(-deltaMousePos.x, 0, -deltaMousePos.y)* mousePanMultiplier;
+				}
+			}
+
+			if(moveVector != Vector3.zero){
+				objectToFollow = null;
+				doingAutoMovement = false;
+			}
+
+			Vector3 effectivePanSpeed = moveVector;
+			if(smoothing){
+				effectivePanSpeed = Vector3.Lerp(lastPanSpeed, moveVector, smoothingFactor);
+				lastPanSpeed = effectivePanSpeed;
+			}
+
+			float oldRotation = transform.localEulerAngles.x;
+			Vector3 localEulerAngles = new Vector3(0.0f, transform.localEulerAngles.y, transform.localEulerAngles.z);
+			transform.localEulerAngles = localEulerAngles;
+			float panMultiplier = increaseSpeedWhenZoomedOut ? (Mathf.Sqrt (currentCameraDistance )) : 1.0f;
+			cameraTarget  = cameraTarget + transform.TransformDirection(effectivePanSpeed) * panSpeed * panMultiplier * Time.deltaTime;
+			transform.localEulerAngles = new Vector3(oldRotation, transform.localEulerAngles.y, transform.localEulerAngles.z);
 		}
-		
-		internal void setCameraSpeed(float speed) {
-			cameraSpeed = speed;
+
+		private void updateRotation(){
+			float deltaAngleH = 0.0f;
+			float deltaAngleV = 0.0f;
+
+			if(useKeyboardInput){
+				if(Input.GetKey(KeyCode.Q)){
+					deltaAngleH = 1.0f;
+				}
+				if(Input.GetKey (KeyCode.E)){
+					deltaAngleV = -1.0f;
+				}
+			}
+
+			if(useMouseInput){
+				if(Input.GetMouseButton(2) && !Input.GetKey(KeyCode.LeftShift)){
+					Vector3 deltaMousePos = (Input.mousePosition - lastMousePos);
+					deltaAngleH += deltaMousePos.x * mouseRotationMultiplier;
+					deltaAngleV -= deltaMousePos.y * mouseRotationMultiplier;
+				}
+			}
+
+			float angleY  = transform.localEulerAngles.y + deltaAngleH * Time.deltaTime * rotationSpeed;
+			float angleX  = Mathf.Min (80.0f, Mathf.Max (5.0f, transform.localEulerAngles.x + deltaAngleV * Time.deltaTime * rotationSpeed));
+			transform.localEulerAngles = new Vector3(angleX, angleY, transform.localEulerAngles.z);
 		}
-		
-		internal void setLookAtTarget(bool lookAt) {
-			cameraLookAt = lookAt;
+
+		private void updateZooming(){
+			float deltaZoom = 0.0f;
+			if(useKeyboardInput){
+				if(Input.GetKey (KeyCode.F)){
+					deltaZoom = 1.0f;
+				}
+				if(Input.GetKey(KeyCode.R)){
+					deltaZoom = -1.0f;
+				}
+			}
+
+			if(useMouseInput){
+				float scroll = Input.GetAxis ("Mouse ScrollWheel");
+				deltaZoom -= scroll * mouseZoomMultiplier;
+			}
+
+			float zoomedOutRatio = correctZoomingOutRatio ? (currentCameraDistance - minZoomDistance ) / (maxZoomDistance - minZoomDistance) : 0.0f;
+			currentCameraDistance = Mathf.Max (minZoomDistance, Mathf.Min(maxZoomDistance, currentCameraDistance + deltaZoom * Time.deltaTime * zoomSpeed * (zoomedOutRatio * 2.0f + 1.0f)));
 		}
-		
+
+		private void updatePosition(){
+			if(objectToFollow != null){
+				cameraTarget = Vector3.Lerp (cameraTarget, objectToFollow.transform.position, goToSpeed);
+			}
+
+			transform.position = cameraTarget;
+			transform.Translate(Vector3.back * currentCameraDistance);
+
+			if(adaptToTerrainHeight && terrain != null){
+				float newHeight = Mathf.Max (terrain.SampleHeight(transform.position) + terrain.transform.position.y + 10.0f, transform.position.y);
+				transform.position = new Vector3(transform.position.x, newHeight, transform.position.z);
+			}
+		}
+
+		private void updateAutoMovement(){
+			if(doingAutoMovement){
+				cameraTarget = Vector3.Lerp (cameraTarget, goingToCameraTarget, goToSpeed);
+				if(Vector3.Distance(goingToCameraTarget, cameraTarget) < 1.0f){
+					doingAutoMovement = false;
+				}
+			}
+		}
+
 	}
-	
 }

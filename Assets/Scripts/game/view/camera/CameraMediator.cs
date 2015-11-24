@@ -21,9 +21,7 @@ namespace tikal.game {
 		public override void OnRegister() {
 			AddListeners();
 			view.init();
-			
-			// demo
-			resetDemoValues();
+
 		}
 		
 		public override void OnRemove() {
@@ -39,7 +37,7 @@ namespace tikal.game {
 		}
 
 		private void onCameraStateChanged(CameraState state) {
-			model.SetState(state);
+			/*model.SetState(state);
 			
 			view.stateChange(state);
 			if (state == CameraState.CINEMATIC) {
@@ -52,70 +50,8 @@ namespace tikal.game {
 				view.attachToTarget();
 				// demo
 				characterAttach = true;
-			}
+			}*/
 		}
-		
-		private IEnumerator flyToWaypoints() {
-			CameraWaypoint waypoint;
-			int i = 0,
-			len = model.waypoints.Count;
-			
-			for (; i < len; i++) {
-				waypoint = model.waypoints[i];
-				view.flyToWaypoint(waypoint);
-				
-				yield return new WaitForSeconds(waypoint.duration + waypoint.delay);
-				
-				// demo
-				currentWaypoint++;
-			}
-			
-			flythroughCompleteSignal.Dispatch();
-			
-			// demo
-			cinematicEnd = true;
-			yield return new WaitForSeconds(2f);
-			initialSequence = false;
-			currentWaypoint = -1;
-			
-			yield return null;
-		}
-		
-		//-----------------------------------
-		//- DEMO DEBUG CONTROLS/INFORMATION -
-		//-----------------------------------
-		
-		private bool initialSequence;
-		private bool cinematicStart;
-		private bool cinematicEnd;
-		private bool characterAttach;
-		private int currentWaypoint;
-		private float sliderDistance;
-		private float sliderHeight;
-		private float sliderSpeed;
-		private bool lookAtTarget;
-		
-		private void resetDemoValues() {
-			initialSequence = true;
-			cinematicStart = false;
-			cinematicEnd = false;
-			characterAttach = false;
-			currentWaypoint = 0;
-			sliderDistance = 15f;
-			sliderHeight = 8f;
-			sliderSpeed = 2.5f;
-			lookAtTarget = false;
-			
-			view.setCameraDistance(sliderDistance);
-			view.setCameraHeight(sliderHeight);
-			view.setCameraSpeed(sliderSpeed);
-			view.setLookAtTarget(lookAtTarget);
-		}
-		
-		void OnGUI() {
-						
-			GUI.Box(new Rect(10, Screen.height - 50, 100, 40), "cf Camera Mediator");
-		}
-
+	
 	}
 }

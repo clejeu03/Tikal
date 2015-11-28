@@ -150,7 +150,7 @@ namespace tikal.game {
 			}
 
 			if(useMouseInput){
-				if(Input.GetMouseButton(2) && Input.GetKey (KeyCode.LeftShift)){
+				if(Input.GetMouseButton(1) && Input.GetKey (KeyCode.LeftShift)){
 					Vector3 deltaMousePos = (Input.mousePosition - lastMousePos);
 					moveVector += new Vector3(-deltaMousePos.x, 0, -deltaMousePos.y)* mousePanMultiplier;
 				}
@@ -189,7 +189,7 @@ namespace tikal.game {
 			}
 
 			if(useMouseInput){
-				if(Input.GetMouseButton(2) && !Input.GetKey(KeyCode.LeftShift)){
+				if(Input.GetMouseButton(1) && !Input.GetKey(KeyCode.LeftShift)){
 					Vector3 deltaMousePos = (Input.mousePosition - lastMousePos);
 					deltaAngleH += deltaMousePos.x * mouseRotationMultiplier;
 					deltaAngleV -= deltaMousePos.y * mouseRotationMultiplier;

@@ -2,11 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using strange.extensions.mediation.impl;
 
 namespace tikal.game {
 	
-	public class CameraView : View {
+	public class CameraView : MonoBehaviour {
 
 		internal const string DOUBLE_CLICK_EVENT = "DOUBLE_CLICK_EVENT";
 
@@ -49,18 +48,13 @@ namespace tikal.game {
 		void Start(){
 			currentCameraDistance = minZoomDistance + ((maxZoomDistance - minZoomDistance) / 2.0f);
 			lastMousePos = Vector3.zero;
-		}
-
-		internal void init(){
 			gameObject.AddComponent<DoubleClickDetector>();
 			doubleClicker = gameObject.GetComponent<DoubleClickDetector>();
-			StartCoroutine (addDoubleClicker ());
 		}
 
-		private IEnumerator addDoubleClicker()
+		private void OnDoubleClick()
 		{
-			yield return null;
-			doubleClicker.dispatcher.AddListener(DoubleClickDetector.DOUBLE_CLICK, updateDoubleClick);
+			updateDoubleClick ();
 		}
 
 		void Update(){

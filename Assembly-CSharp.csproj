@@ -45,9 +45,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\game\BuildingManager.cs" />
+     <Compile Include="Assets\Scripts\game\BuildingType.cs" />
      <Compile Include="Assets\Scripts\game\GameRoot.cs" />
      <Compile Include="Assets\Scripts\game\view\CameraView.cs" />
      <Compile Include="Assets\Scripts\game\view\DoubleClickDetector.cs" />
+     <Compile Include="Assets\Scripts\game\view\GUIManager.cs" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableWeightedBlurDof34.shader" />

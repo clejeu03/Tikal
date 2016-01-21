@@ -14,11 +14,15 @@ namespace tikal.game
 		}
 
 		void OnEnable(){
-			GUIManager.OnCreateBuilding += CreateBuilding;
+			GUIManager.OnCreateBuildingShadow += CreateBuilding;
+		}
+
+		void OnDisable(){
+			GUIManager.OnCreateBuildingShadow -= CreateBuilding;
 		}
 
 		private void CreateBuilding(BuildingType type){
-			m_buildingManager.createBuildingBlueprint(type);
+			m_buildingManager.createBuildingShadow(type);
 		}
 	}
 }

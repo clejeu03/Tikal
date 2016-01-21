@@ -49,6 +49,7 @@
      <Compile Include="Assets\Scripts\game\BuildingType.cs" />
      <Compile Include="Assets\Scripts\game\Dispatcher.cs" />
      <Compile Include="Assets\Scripts\game\GameRoot.cs" />
+     <Compile Include="Assets\Scripts\game\view\BuildingShadow.cs" />
      <Compile Include="Assets\Scripts\game\view\CameraView.cs" />
      <Compile Include="Assets\Scripts\game\view\DoubleClickDetector.cs" />
      <Compile Include="Assets\Scripts\game\view\GUIManager.cs" />

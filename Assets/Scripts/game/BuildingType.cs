@@ -5,7 +5,8 @@ namespace tikal.game
 	public enum BuildingType
 	{
 		Building1,
-		Building2
+		Building2,
+		None
 	}
 }
 

@@ -6,18 +6,20 @@ namespace tikal.game
 	public class GUIManager : MonoBehaviour
 	{
 
-		[SerializeField] private BuildingManager m_buildingManager;
+		public delegate void CreateBuilding(BuildingType type);
+		public static event CreateBuilding OnCreateBuilding;
 
-		public GUIManager ()
-		{
-		}
 
 		public void createBuilding1Order(){
-			m_buildingManager.createBuildingBlueprint (BuildingType.Building1);
+			if (OnCreateBuilding != null)
+				OnCreateBuilding (BuildingType.Building1);
+			//m_dispatcher.createBuildingBlueprint (BuildingType.Building1);
 		}
 
 		public void createBuilding2Order(){
-			m_buildingManager.createBuildingBlueprint (BuildingType.Building2);
+			if (OnCreateBuilding != null)
+				OnCreateBuilding (BuildingType.Building2);
+			//m_dispatcher.createBuildingBlueprint (BuildingType.Building2);
 		}
 	}
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace tikal.game
 {
-	public class BuildingManager : MonoBehaviour
+	public class BuildingManager
 	{
 		public BuildingManager ()
 		{

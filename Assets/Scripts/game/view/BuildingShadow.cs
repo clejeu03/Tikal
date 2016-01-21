@@ -34,7 +34,7 @@ namespace tikal.game
 
 		void Update(){
 			if (m_type != BuildingType.None) {
-				this.transform.position = Input.mousePosition;
+				this.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 200));
 
 				if (!m_creationAsked)
 					checkTerrain ();

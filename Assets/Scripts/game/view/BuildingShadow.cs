@@ -29,12 +29,12 @@ namespace tikal.game
 				m_lenght = 30;
 			}
 
-			transform.localScale = new Vector3 (m_lenght, 1, m_width);
+			transform.localScale = new Vector3 (m_lenght/10, 1, m_width/10);
 		}
 
 		void Update(){
 			if (m_type != BuildingType.None) {
-				this.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 200));
+				this.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 50));
 
 				if (!m_creationAsked)
 					checkTerrain ();

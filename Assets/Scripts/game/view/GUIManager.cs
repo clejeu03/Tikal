@@ -9,6 +9,8 @@ namespace tikal.game
 		public delegate void CreateBuildingShadow(BuildingType type);
 		public static event CreateBuildingShadow OnCreateBuildingShadow;
 
+		public delegate void CreateRoad();
+		public static event CreateRoad OnCreateRoad;
 
 		public void createBuilding1Order(){
 			if (OnCreateBuildingShadow != null)
@@ -18,6 +20,11 @@ namespace tikal.game
 		public void createBuilding2Order(){
 			if (OnCreateBuildingShadow != null)
 				OnCreateBuildingShadow (BuildingType.Building2);
+		}
+
+		public void createRoadOrder(){
+			if (OnCreateRoad != null)
+				OnCreateRoad ();
 		}
 	}
 }

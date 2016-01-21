@@ -22,11 +22,17 @@ namespace tikal.game
 		{
 			m_type = type;
 			if (m_type == BuildingType.Building1) {
+				this.enabled = true;
 				m_width = 20;
 				m_lenght = 20;
 			} else if (m_type == BuildingType.Building2) {
+				this.enabled = true;
 				m_width = 30;
 				m_lenght = 30;
+			} else if (m_type == BuildingType.None) {
+				this.enabled = false;
+				m_width = 0;
+				m_lenght = 0;
 			}
 
 			transform.localScale = new Vector3 (m_lenght/10, 1, m_width/10);
@@ -38,6 +44,10 @@ namespace tikal.game
 
 				if (!m_creationAsked)
 					checkTerrain ();
+			}
+
+			if (Input.GetMouseButtonDown (1)) {
+				setType (BuildingType.None);
 			}
 		}
 

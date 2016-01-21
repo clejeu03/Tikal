@@ -15,14 +15,21 @@ namespace tikal.game
 
 		void OnEnable(){
 			GUIManager.OnCreateBuildingShadow += CreateBuilding;
+			GUIManager.OnCreateRoad += CreateRoad;
 		}
 
 		void OnDisable(){
 			GUIManager.OnCreateBuildingShadow -= CreateBuilding;
+			GUIManager.OnCreateRoad -= CreateRoad;
+
 		}
 
 		private void CreateBuilding(BuildingType type){
 			m_buildingManager.createBuildingShadow(type);
+		}
+
+		private void CreateRoad(){
+			//TODO
 		}
 	}
 }

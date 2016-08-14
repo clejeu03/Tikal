@@ -2,11 +2,10 @@
 
 using System;
 using UnityEngine;
-using strange.extensions.mediation.impl;
 
 namespace tikal.game
 {
-	public class DoubleClickDetector : EventView
+	public class DoubleClickDetector : MonoBehaviour
 	{
 		public const string DOUBLE_CLICK = "DOUBLE_CLICK";
 
@@ -17,7 +16,7 @@ namespace tikal.game
 			bool isDoubleClick = (numberOfClicks == 2)?true : false;
 			if(isDoubleClick){
 				numberOfClicks = 0;
-				dispatcher.Dispatch(DOUBLE_CLICK);
+				SendMessage ("OnDoubleClick");
 			}
 			return isDoubleClick;
 		}

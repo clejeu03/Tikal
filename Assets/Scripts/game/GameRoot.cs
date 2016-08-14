@@ -6,18 +6,15 @@
 
 using System;
 using UnityEngine;
-using strange.extensions.context.api;
-using strange.extensions.context.impl;
 
 namespace tikal.game
 {
-	public class GameRoot : ContextView
+	public class GameRoot : MonoBehaviour
 	{
 	
 		void Awake()
 		{
-			//Instantiate the context, passing it this instance.
-			context = new GameContext(this);
+			//Nothing
 		}
 	}
 }

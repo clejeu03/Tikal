@@ -12,6 +12,10 @@ namespace tikal.game
 
 		private Material m_blueprintOK;
 		private Material m_blueprintNO;
+
+		private AudioSource m_audio;
+		private AudioClip m_constructionCompleteSound;
+		private AudioClip m_constructionImpossibleSound;
 		private float distanceToGround = 100f;
 
 		public delegate void ConstructBuilding();
@@ -23,6 +27,11 @@ namespace tikal.game
 		void Start(){
 			m_blueprintOK = (Material)Resources.Load ("Materials/BuildingOKBlueprint");
 			m_blueprintNO = (Material)Resources.Load ("Materials/BuildingNOBlueprint");
+
+			m_constructionCompleteSound = (AudioClip)Resources.Load ("Sounds/ConstructionComplete");
+			m_constructionImpossibleSound = (AudioClip)Resources.Load ("Sounds/ConstructionImpossible");
+
+			m_audio = Camera.main.GetComponent<AudioSource>();
 			goTerrain = GameObject.FindGameObjectWithTag("Terrain");
 			GetComponent<MeshRenderer>().material = m_blueprintNO;
 		}
@@ -51,8 +60,14 @@ namespace tikal.game
 			}
 
 			if (Input.GetMouseButtonDown (0) && m_okForConstruction) {
-				if (OnConstructBuilding != null)
+				if (OnConstructBuilding != null){
 					OnConstructBuilding ();
+					m_audio.clip = m_constructionCompleteSound;
+					m_audio.Play();
+				}
+			}else if(Input.GetMouseButtonDown (0) && !m_okForConstruction){
+				m_audio.clip = m_constructionImpossibleSound;
+				m_audio.Play();
 			}
 				
 		}

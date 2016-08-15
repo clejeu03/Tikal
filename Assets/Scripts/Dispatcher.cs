@@ -7,10 +7,12 @@ namespace tikal.game
 	{
 
 		private BuildingManager m_buildingManager;
+		private RoadManager m_roadManager;
 
 		void Start ()
 		{
 			m_buildingManager = new BuildingManager();
+			m_roadManager = new RoadManager();
 		}
 
 		void OnEnable(){
@@ -25,13 +27,11 @@ namespace tikal.game
 		}
 
 		private void CreateBuilding(BuildingType type){
-			Debug.Log("<<DISPATCHER>> received Create Building Event");
 			m_buildingManager.createBuildingShadow(type);
 		}
 
 		private void CreateRoad(){
-			Debug.Log("<<DISPATCHER>> received Create Road Event");
-			//TODO
+			m_roadManager.createRoadShadow();
 		}
 	}
 }

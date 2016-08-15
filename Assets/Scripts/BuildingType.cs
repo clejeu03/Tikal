@@ -2,6 +2,7 @@
 
 namespace tikal.game
 {
+
 	public enum BuildingType
 	{
 		Building1,

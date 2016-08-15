@@ -10,7 +10,7 @@ namespace tikal.game
 
 		void Start ()
 		{
-			m_buildingManager = new BuildingManager ();
+			m_buildingManager = this.GetComponent<BuildingManager>();
 		}
 
 		void OnEnable(){
